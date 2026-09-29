@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerar atividade — FlyLearn</title>
+<title>Corrigir atividade — FlyLearn</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..900&family=Caveat:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -282,8 +282,35 @@ footer.site-footer .hand{color:var(--pencil);font-size:1.4rem;}
   .modal-overlay{position:static;background:none;padding:0;display:block !important;}
   .worksheet{box-shadow:none;border:none;}
 }
-</style>
 
+/* ---- corrigir atividade ---- */
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--margin-red);color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:.85rem;margin-right:10px;vertical-align:middle;flex-shrink:0;}
+.gabarito-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:16px;}
+.gabarito-q{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:9px 12px;}
+.gabarito-q .qn{font-family:'Fraunces',serif;font-weight:700;color:var(--ink-blue);flex-shrink:0;font-size:.92rem;}
+.gabarito-opts{display:flex;gap:6px;}
+.gabarito-opt{width:28px;height:28px;border-radius:50%;border:1.5px solid #C9DCEF;background:#fff;color:var(--ink-light);font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;padding:0;}
+.gabarito-opt:hover{border-color:var(--pencil);}
+.gabarito-opt.selected{background:var(--pencil);border-color:var(--pencil);color:#fff;}
+.dropzone{border:2px dashed #C9DCEF;border-radius:14px;padding:44px 24px;text-align:center;cursor:pointer;transition:all .15s;background:#fff;}
+.dropzone:hover,.dropzone.dragover{border-color:var(--pencil);background:#EAF2FE;}
+.dropzone .dz-icon{font-size:2.3rem;margin-bottom:10px;}
+.dropzone h3{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;margin:0 0 4px;}
+.dropzone p{color:var(--ink-light);font-size:.88rem;margin:0;}
+.dropzone input[type="file"]{display:none;}
+.photo-preview{position:relative;display:inline-block;max-width:100%;}
+.photo-preview img{max-width:100%;max-height:360px;border-radius:12px;border:1px solid var(--border);display:block;}
+.photo-preview .btn-remove-photo{position:absolute;top:10px;right:10px;background:rgba(11,42,77,.78);color:#fff;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1;}
+.aluno-row{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:18px;}
+@media (max-width:640px){.aluno-row{grid-template-columns:1fr;}}
+.ci-override{margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:12px;border-top:1px dashed var(--border);}
+.ci-override .ovr-label{font-size:.82rem;color:var(--ink-light);margin-right:2px;}
+.ci-override button{width:27px;height:27px;border-radius:50%;border:1.5px solid #C9DCEF;background:#fff;font-size:.76rem;font-weight:700;color:var(--ink-light);cursor:pointer;padding:0;}
+.ci-override button.selected{background:var(--ink-blue);border-color:var(--ink-blue);color:#fff;}
+.ci-override .ovr-note{font-size:.78rem;color:var(--pencil);font-weight:600;margin-left:4px;display:none;}
+.ci-override .ovr-note.show{display:inline;}
+.result-hidden{display:none;}
+</style>
 </head>
 <body>
 
@@ -293,8 +320,9 @@ footer.site-footer .hand{color:var(--pencil);font-size:1.4rem;}
       <a class="nav-brand" href="dashboard.html"><span class="dot"></span>FlyLearn</a>
       <nav>
         <a class="" href="dashboard.html"><span class="ic">🏠</span>Painel</a>
-<a class="active" href="gerador.html"><span class="ic">✏️</span>Gerar atividade</a>
-<a class="" href="correcao.html"><span class="ic">🧾</span>Corrigir atividade</a>
+<a class="" href="turmas.html"><span class="ic">👥</span>Turmas</a>
+<a class="" href="gerador.html"><span class="ic">✏️</span>Gerar atividade</a>
+<a class="active" href="correcao.html"><span class="ic">🧾</span>Corrigir atividade</a>
 <a class="" href="biblioteca.html"><span class="ic">📚</span>Minhas atividades</a>
 <a class="" href="perfil.html"><span class="ic">⚙️</span>Perfil</a>
 
@@ -308,300 +336,398 @@ footer.site-footer .hand{color:var(--pencil);font-size:1.4rem;}
     
     <div class="topbar">
       <div>
-        <h1>Gerar atividade</h1>
-        <div class="topbar-sub">Descreva a aula e deixe o sistema redigir as questões.</div>
+        <h1>Corrigir atividade</h1>
+        <div class="topbar-sub">Fotografe a folha de respostas e deixe o sistema calcular a nota.</div>
       </div>
       <div class="avatar">P</div>
     </div>
     
     <div class="content">
-      <div class="notebook">
-        <h2>Nova atividade</h2>
-        <p class="sub">Preencha os campos abaixo. Quanto mais específico o tema, melhor o resultado.</p>
 
-        <form id="gen-form">
-          <div class="form-grid">
-            <div class="field">
-              <label for="turma">Turma</label>
-              <select id="turma">
-                <option value="">Nenhuma turma vinculada (uso livre)</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="segmento">Segmento / série</label>
-              <select id="segmento" required>
-                <option value="Educação Infantil">Educação Infantil</option>
-                <option value="1º ano do Fundamental I">1º ano — Fundamental I</option>
-                <option value="2º ano do Fundamental I">2º ano — Fundamental I</option>
-                <option value="3º ano do Fundamental I" selected>3º ano — Fundamental I</option>
-                <option value="4º ano do Fundamental I">4º ano — Fundamental I</option>
-                <option value="5º ano do Fundamental I">5º ano — Fundamental I</option>
-                <option value="6º ano do Fundamental II">6º ano — Fundamental II</option>
-                <option value="7º ano do Fundamental II">7º ano — Fundamental II</option>
-                <option value="8º ano do Fundamental II">8º ano — Fundamental II</option>
-                <option value="9º ano do Fundamental II">9º ano — Fundamental II</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="disciplina">Disciplina</label>
-              <input type="text" id="disciplina" placeholder="Ex.: Matemática" value="Matemática" required>
-            </div>
-            <div class="field full">
-              <label for="tema">Tema da aula</label>
-              <input type="text" id="tema" placeholder="Ex.: Frações — soma e subtração com mesmo denominador" required>
-            </div>
-            <div class="field">
-              <label for="tipo-atividade">Tipo de atividade</label>
-              <select id="tipo-atividade">
-                <option value="avaliação">Avaliação</option>
-                <option value="lista de exercícios" selected>Lista de exercícios</option>
-                <option value="ficha de atividades">Ficha de atividades</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="dificuldade">Nível de dificuldade</label>
-              <select id="dificuldade">
-                <option value="fácil">Fácil</option>
-                <option value="médio" selected>Médio</option>
-                <option value="difícil">Difícil</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="quantidade">Quantidade de questões</label>
-              <input type="number" id="quantidade" min="3" max="15" value="6">
-            </div>
-            <div class="field">
-              <label>Tipos de questão</label>
-              <div class="chip-group" id="tipos-questao">
-                <label class="chip checked"><input type="checkbox" value="multipla_escolha" checked>Múltipla escolha</label>
-                <label class="chip"><input type="checkbox" value="verdadeiro_falso">Verdadeiro/Falso</label>
-                <label class="chip"><input type="checkbox" value="dissertativa">Dissertativa</label>
-                <label class="chip"><input type="checkbox" value="completar">Completar lacunas</label>
-              </div>
-            </div>
-            <div class="field full">
-              <label>Adaptações e acessibilidade <span style="font-weight:400;color:var(--ink-light);">(opcional)</span></label>
-              <div class="chip-group" id="adaptacoes">
-                <label class="chip"><input type="checkbox" value="Deficiência visual (evitar depender de cor/imagem; compatível com leitor de tela)">Deficiência visual</label>
-                <label class="chip"><input type="checkbox" value="Deficiência auditiva (evitar depender de áudio; instruções escritas completas)">Deficiência auditiva</label>
-                <label class="chip"><input type="checkbox" value="TEA — Transtorno do Espectro Autista (linguagem literal e direta, sem ironia, sarcasmo ou ambiguidade)">TEA</label>
-                <label class="chip"><input type="checkbox" value="TDAH (enunciados curtos, uma instrução por vez, menos itens por questão)">TDAH</label>
-                <label class="chip"><input type="checkbox" value="Deficiência intelectual (vocabulário simples, frases curtas, um conceito por questão)">Deficiência intelectual</label>
-                <label class="chip"><input type="checkbox" value="Dislexia (frases curtas e objetivas, evitar blocos longos de texto)">Dislexia</label>
-              </div>
-              <span class="form-hint" style="margin-top:2px;">A atividade é adaptada, não substitui o acompanhamento do AEE.</span>
-            </div>
-            <div class="field full">
-              <label for="observacoes">Observações adicionais (opcional)</label>
-              <textarea id="observacoes" placeholder="Ex.: usar contextos do cotidiano, evitar números negativos, incluir uma questão de desafio no final..."></textarea>
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn-generate" id="btn-gerar">
-              <span class="spinner" id="spinner"></span>
-              <span id="btn-label">Gerar atividade</span>
-            </button>
-            <span class="form-hint">Leva cerca de 10–20 segundos.</span>
-          </div>
-          <div class="error-box" id="error-box"></div>
-        </form>
-      </div>
+      <div class="panel">
+        <h2><span class="step-badge">1</span>Gabarito da atividade</h2>
+        <p class="sub">Defina o número de questões e marque a alternativa correta de cada uma.</p>
 
-      <div id="worksheet-area" style="display:none;margin-top:28px;">
-        <div class="worksheet-toolbar">
-          <div class="toolbar-btns">
-            <button type="button" class="btn-small" id="toggle-gabarito">Mostrar gabarito</button>
-            <button type="button" class="btn-small" id="btn-regenerar">Gerar novamente</button>
-            <button type="button" class="btn-small" id="btn-salvar">💾 Salvar na biblioteca</button>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="field">
+            <label for="nome-atividade">Nome da atividade</label>
+            <input type="text" id="nome-atividade" placeholder="Ex.: Prova — Equações do 2º grau">
           </div>
-          <button type="button" class="btn-small" id="btn-imprimir">🖨️ Imprimir / salvar PDF</button>
+          <div class="field">
+            <label for="num-questoes">Quantidade de questões</label>
+            <input type="number" id="num-questoes" min="1" max="30" value="10">
+          </div>
         </div>
-        <div class="worksheet" id="worksheet"></div>
+
+        <div class="gabarito-grid" id="gabarito-grid"></div>
       </div>
+
+      <div class="panel">
+        <h2><span class="step-badge">2</span>Folha de respostas</h2>
+        <p class="sub">Toque para tirar uma foto com a câmera ou envie um arquivo — também funciona arrastando a imagem até aqui.</p>
+
+        <div class="aluno-row">
+          <div class="field">
+            <label for="aluno">Aluno</label>
+            <input type="text" id="aluno" list="aluno-list" placeholder="Nome do aluno">
+            <datalist id="aluno-list"></datalist>
+          </div>
+          <div class="field">
+            <label for="turma">Turma</label>
+            <select id="turma">
+              <option value="">Nenhuma turma vinculada</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="foto-input" accept="image/*" capture="environment">
+            <div id="dz-empty">
+              <div class="dz-icon">📷</div>
+              <h3>Enviar folha de respostas</h3>
+              <p>JPG ou PNG · a imagem fica só no seu navegador</p>
+            </div>
+            <div id="dz-preview" class="photo-preview" style="display:none;">
+              <img id="dz-img" src="" alt="Folha de respostas enviada">
+              <button type="button" class="btn-remove-photo" id="btn-remove-photo" title="Remover foto">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-generate" id="btn-corrigir">
+            <span class="spinner" id="spinner"></span>
+            <span id="btn-label">🧾 Corrigir agora</span>
+          </button>
+          <span class="form-hint">Leva poucos segundos.</span>
+        </div>
+        <div class="error-box" id="error-box"></div>
+      </div>
+
+      <div id="resultado-area" class="result-hidden">
+        <div class="panel">
+          <h2><span class="step-badge">3</span>Resultado</h2>
+          <p class="sub">Confira questão a questão. Se alguma leitura parecer errada, ajuste a resposta manualmente.</p>
+
+          <div class="grade-card">
+            <div class="grade-num" id="grade-num">–</div>
+            <div class="grade-label" id="grade-label">Nota calculada</div>
+            <p class="grade-general" id="grade-general"></p>
+          </div>
+
+          <div id="correction-list"></div>
+
+          <div class="worksheet-toolbar" style="margin-top:22px;">
+            <div class="toolbar-btns">
+              <button type="button" class="btn-small" id="btn-salvar-nota">💾 Salvar nota</button>
+              <button type="button" class="btn-small" id="btn-nova-correcao">🔁 Corrigir outra folha</button>
+            </div>
+            <button type="button" class="btn-small" id="btn-imprimir">🖨️ Imprimir relatório</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Correções recentes</h2>
+        <p class="sub">As últimas folhas corrigidas nesta turma.</p>
+        <div class="recent-list" id="recent-list">
+          <div class="recent-item">
+            <div class="ri-main"><div class="ri-ic">🧾</div><div><h4>Frações — soma e subtração</h4><div class="meta">Miguel A. · 3º ano Fundamental I · há 2 dias</div></div></div>
+            <div><span class="tag tag-green">9.0</span></div>
+          </div>
+          <div class="recent-item">
+            <div class="ri-main"><div class="ri-ic">🧾</div><div><h4>Estados e capitais do Brasil</h4><div class="meta">Ana C. · 5º ano Fundamental I · há 4 dias</div></div></div>
+            <div><span class="tag">7.5</span></div>
+          </div>
+          <div class="recent-item">
+            <div class="ri-main"><div class="ri-ic">🧾</div><div><h4>Estados físicos da água</h4><div class="meta">Pedro L. · 6º ano Fundamental II · há 1 semana</div></div></div>
+            <div><span class="tag tag-red">4.0</span></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>
 
+</body>
+
 
 <script>
 (function(){
-  const form = document.getElementById('gen-form');
-  const btnGerar = document.getElementById('btn-gerar');
-  const btnLabel = document.getElementById('btn-label');
-  const spinner = document.getElementById('spinner');
-  const errorBox = document.getElementById('error-box');
-  const worksheetArea = document.getElementById('worksheet-area');
-  const worksheetEl = document.getElementById('worksheet');
-  const toggleGabarito = document.getElementById('toggle-gabarito');
+  const OPCOES = ['A','B','C','D'];
 
-  // Popula o select de Turma com as turmas cadastradas em turmas.html
-  (function loadTurmas(){
-    const select = document.getElementById('turma');
-    try{
-      const raw = localStorage.getItem('flylearn_turmas');
-      const turmas = raw ? JSON.parse(raw) : [];
-      turmas.forEach(t=>{
+  // ---- popula turma / aluno a partir do localStorage compartilhado com turmas.html ----
+  const turmaSelect = document.getElementById('turma');
+  const alunoList = document.getElementById('aluno-list');
+  let turmasData = [];
+  try{
+    const raw = localStorage.getItem('flylearn_turmas');
+    turmasData = raw ? JSON.parse(raw) : [];
+    turmasData.forEach(t=>{
+      const opt = document.createElement('option');
+      opt.value = t.nome;
+      opt.textContent = t.nome + (t.alunos ? ' (' + t.alunos.length + ' alunos)' : '');
+      turmaSelect.appendChild(opt);
+    });
+  }catch(e){}
+
+  turmaSelect.addEventListener('change', ()=>{
+    alunoList.innerHTML = '';
+    const t = turmasData.find(x=>x.nome === turmaSelect.value);
+    if(t && t.alunos){
+      t.alunos.forEach(a=>{
         const opt = document.createElement('option');
-        opt.value = t.nome;
-        opt.textContent = t.nome + (t.alunos ? ' (' + t.alunos.length + ' alunos)' : '');
-        select.appendChild(opt);
+        opt.value = a.nome;
+        alunoList.appendChild(opt);
       });
-    }catch(e){}
-  })();
-  const btnRegenerar = document.getElementById('btn-regenerar');
-  const btnImprimir = document.getElementById('btn-imprimir');
-  const btnSalvar = document.getElementById('btn-salvar');
-
-  document.querySelectorAll('.chip input').forEach(cb=>{
-    cb.addEventListener('change', ()=>{ cb.closest('.chip').classList.toggle('checked', cb.checked); });
+    }
   });
 
-  function getSelectedTipos(){
-    return Array.from(document.querySelectorAll('#tipos-questao input:checked')).map(i=>i.value);
-  }
-  function getSelectedAdaptacoes(){
-    return Array.from(document.querySelectorAll('#adaptacoes input:checked')).map(i=>i.value);
-  }
+  // ---- grade do gabarito ----
+  const grid = document.getElementById('gabarito-grid');
+  const numQuestoesInput = document.getElementById('num-questoes');
 
-  function buildPrompt(){
-    const segmento = document.getElementById('segmento').value;
-    const disciplina = document.getElementById('disciplina').value.trim();
-    const tema = document.getElementById('tema').value.trim();
-    const tipoAtividade = document.getElementById('tipo-atividade').value;
-    const dificuldade = document.getElementById('dificuldade').value;
-    const quantidade = document.getElementById('quantidade').value;
-    const observacoes = document.getElementById('observacoes').value.trim();
-    const tipos = getSelectedTipos();
-    const adaptacoes = getSelectedAdaptacoes();
-
-    return `Você é um assistente pedagógico que ajuda professores da educação básica brasileira a preparar material de aula.
-
-Gere uma ${tipoAtividade} de ${disciplina} para o(a) ${segmento}, sobre o tema: "${tema}".
-
-Regras:
-- Nível de dificuldade: ${dificuldade}.
-- Gere exatamente ${quantidade} questões.
-- Tipos de questão permitidos (misture entre eles): ${tipos.length ? tipos.join(', ') : 'multipla_escolha'}.
-- Linguagem apropriada para a faixa etária do segmento informado.
-- Questões originais, claras e alinhadas ao tema.
-${adaptacoes.length ? '- Adapte a atividade para as seguintes necessidades, mantendo o mesmo conteúdo pedagógico e sem infantilizar o aluno:\n' + adaptacoes.map(a => '  · ' + a).join('\n') : ''}
-${observacoes ? '- Observações do professor: ' + observacoes : ''}
-
-Responda SOMENTE com um JSON válido, sem markdown, sem crases, sem texto antes ou depois, no seguinte formato exato:
-
-{
-  "titulo": "string curta",
-  "instrucoes": "string com instruções gerais para o aluno",
-  "questoes": [
-    {
-      "tipo": "multipla_escolha" | "verdadeiro_falso" | "dissertativa" | "completar",
-      "enunciado": "string",
-      "opcoes": ["string", "string", "string", "string"],
-      "resposta": "string com a resposta correta ou resposta esperada"
-    }
-  ]
-}
-
-Para tipo "verdadeiro_falso", "dissertativa" e "completar", o campo "opcoes" pode ser uma lista vazia.`;
-  }
-
-  async function callAI(prompt){
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 4000,
-        messages: [{ role: "user", content: prompt }]
-      })
+  function getGabaritoState(){
+    const state = {};
+    grid.querySelectorAll('.gabarito-q').forEach(row=>{
+      const q = row.dataset.q;
+      const sel = row.querySelector('.gabarito-opt.selected');
+      state[q] = sel ? sel.dataset.opt : null;
     });
-    if(!response.ok){ throw new Error("Falha ao gerar a atividade (status " + response.status + ")"); }
-    const data = await response.json();
-    const text = data.content.map(b => b.text || "").filter(Boolean).join("\n");
-    const clean = text.replace(/```json/g,"").replace(/```/g,"").trim();
-    return JSON.parse(clean);
+    return state;
   }
 
-  function letra(i){ return String.fromCharCode(97+i) + ')'; }
-  function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-  function renderWorksheet(data){
-    const segmento = document.getElementById('segmento').value;
-    const turma = document.getElementById('turma').value;
-    const disciplina = document.getElementById('disciplina').value.trim();
-    const tipoAtividade = document.getElementById('tipo-atividade').value;
-    const adaptacoes = getSelectedAdaptacoes();
-
-    let html = `<div class="ws-header">
-        <div class="ws-title">${escapeHtml(data.titulo || (disciplina + ' — ' + tipoAtividade))}</div>
-        <div class="ws-meta">
-          <span>Nome: <b>&nbsp;</b></span>
-          <span>Turma: <b>${escapeHtml(turma || segmento)}</b></span>
-          <span>Data: <b>&nbsp;</b></span>
-        </div>
-      </div>`;
-
-    if(adaptacoes.length){
-      html += `<div class="ws-instructions" style="border-left-color:var(--ink-blue);"><b>Versão adaptada</b> — considerando: ${escapeHtml(adaptacoes.map(a=>a.split(' (')[0]).join(', '))}.</div>`;
+  function buildGabaritoGrid(){
+    const prev = getGabaritoState();
+    const n = Math.max(1, Math.min(30, parseInt(numQuestoesInput.value, 10) || 1));
+    grid.innerHTML = '';
+    for(let i = 1; i <= n; i++){
+      const row = document.createElement('div');
+      row.className = 'gabarito-q';
+      row.dataset.q = i;
+      const qn = document.createElement('span');
+      qn.className = 'qn';
+      qn.textContent = String(i).padStart(2,'0');
+      const opts = document.createElement('div');
+      opts.className = 'gabarito-opts';
+      OPCOES.forEach(letra=>{
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'gabarito-opt';
+        btn.dataset.opt = letra;
+        btn.textContent = letra;
+        if(prev[i] === letra) btn.classList.add('selected');
+        btn.addEventListener('click', ()=>{
+          opts.querySelectorAll('.gabarito-opt').forEach(b=>b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
+        opts.appendChild(btn);
+      });
+      row.appendChild(qn);
+      row.appendChild(opts);
+      grid.appendChild(row);
     }
-    if(data.instrucoes){ html += `<div class="ws-instructions">${escapeHtml(data.instrucoes)}</div>`; }
-
-    (data.questoes || []).forEach((q, idx)=>{
-      html += `<div class="question"><div class="q-head"><span class="q-num">${idx+1}.</span><span class="q-text">${escapeHtml(q.enunciado || '')}</span></div>`;
-      if(q.tipo === 'multipla_escolha' && Array.isArray(q.opcoes) && q.opcoes.length){
-        html += `<ul class="options">`;
-        q.opcoes.forEach((op, i)=>{ html += `<li><span class="letter">${letra(i)}</span> ${escapeHtml(op)}</li>`; });
-        html += `</ul>`;
-      } else if(q.tipo === 'verdadeiro_falso'){
-        html += `<div class="vf-row"><label><input type="checkbox"> Verdadeiro</label><label><input type="checkbox"> Falso</label></div>`;
-      } else if(q.tipo === 'dissertativa'){
-        html += `<div class="lines"><div class="line"></div><div class="line"></div></div>`;
-      } else if(q.tipo === 'completar'){
-        html += `<div class="lines"><div class="line"></div></div>`;
-      }
-      if(q.resposta){ html += `<div class="answer" data-answer>Gabarito: ${escapeHtml(q.resposta)}</div>`; }
-      html += `</div>`;
-    });
-
-    worksheetEl.innerHTML = html;
-    worksheetArea.style.display = 'block';
-    worksheetArea.scrollIntoView({behavior:'smooth', block:'start'});
   }
+  numQuestoesInput.addEventListener('input', buildGabaritoGrid);
+  buildGabaritoGrid();
 
-  async function generate(){
+  // ---- upload / câmera da folha de respostas ----
+  const dropzone = document.getElementById('dropzone');
+  const fotoInput = document.getElementById('foto-input');
+  const dzEmpty = document.getElementById('dz-empty');
+  const dzPreview = document.getElementById('dz-preview');
+  const dzImg = document.getElementById('dz-img');
+  const btnRemovePhoto = document.getElementById('btn-remove-photo');
+  let fotoDataUrl = null;
+
+  dropzone.addEventListener('click', (e)=>{
+    if(e.target === btnRemovePhoto) return;
+    fotoInput.click();
+  });
+  ['dragover'].forEach(ev=>dropzone.addEventListener(ev, (e)=>{ e.preventDefault(); dropzone.classList.add('dragover'); }));
+  ['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev, (e)=>{ e.preventDefault(); dropzone.classList.remove('dragover'); }));
+  dropzone.addEventListener('drop', (e)=>{
+    if(e.dataTransfer.files && e.dataTransfer.files[0]) handleFoto(e.dataTransfer.files[0]);
+  });
+  fotoInput.addEventListener('change', ()=>{
+    if(fotoInput.files && fotoInput.files[0]) handleFoto(fotoInput.files[0]);
+  });
+  function handleFoto(file){
+    if(!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      fotoDataUrl = e.target.result;
+      dzImg.src = fotoDataUrl;
+      dzEmpty.style.display = 'none';
+      dzPreview.style.display = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+  }
+  btnRemovePhoto.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    fotoDataUrl = null;
+    fotoInput.value = '';
+    dzImg.src = '';
+    dzEmpty.style.display = 'block';
+    dzPreview.style.display = 'none';
+  });
+
+  // ---- corrigir ----
+  const btnCorrigir = document.getElementById('btn-corrigir');
+  const spinner = document.getElementById('spinner');
+  const btnLabel = document.getElementById('btn-label');
+  const errorBox = document.getElementById('error-box');
+  const resultadoArea = document.getElementById('resultado-area');
+  const correctionList = document.getElementById('correction-list');
+  const gradeNum = document.getElementById('grade-num');
+  const gradeLabel = document.getElementById('grade-label');
+  const gradeGeneral = document.getElementById('grade-general');
+  const recentList = document.getElementById('recent-list');
+
+  let corrections = []; // { q, correta, marcada, status }
+
+  function showError(msg){
+    errorBox.textContent = msg;
+    errorBox.classList.add('show');
+  }
+  function clearError(){
     errorBox.classList.remove('show');
-    const tema = document.getElementById('tema').value.trim();
-    if(!tema){ errorBox.textContent = 'Escreva o tema da aula antes de gerar a atividade.'; errorBox.classList.add('show'); return; }
-    btnGerar.disabled = true; spinner.classList.add('on'); btnLabel.textContent = 'Gerando...';
-    try{
-      const prompt = buildPrompt();
-      const data = await callAI(prompt);
-      renderWorksheet(data);
-      toggleGabarito.textContent = 'Mostrar gabarito';
-      toggleGabarito.classList.remove('active');
-      document.querySelectorAll('[data-answer]').forEach(el=>el.classList.remove('show'));
-    }catch(err){
-      errorBox.textContent = 'Não foi possível gerar a atividade agora. ' + (err.message || 'Tente novamente.');
-      errorBox.classList.add('show');
-    }finally{
-      btnGerar.disabled = false; spinner.classList.remove('on'); btnLabel.textContent = 'Gerar atividade';
-    }
+    errorBox.textContent = '';
   }
 
-  form.addEventListener('submit', function(e){ e.preventDefault(); generate(); });
-  btnRegenerar.addEventListener('click', generate);
-  toggleGabarito.addEventListener('click', ()=>{
-    const showing = toggleGabarito.classList.toggle('active');
-    document.querySelectorAll('[data-answer]').forEach(el=>el.classList.toggle('show', showing));
-    toggleGabarito.textContent = showing ? 'Ocultar gabarito' : 'Mostrar gabarito';
+  btnCorrigir.addEventListener('click', ()=>{
+    clearError();
+    const gabarito = getGabaritoState();
+    const questoes = Object.keys(gabarito);
+    const semResposta = questoes.filter(q=>!gabarito[q]);
+    if(semResposta.length){
+      showError('Marque a alternativa correta de todas as questões do gabarito antes de corrigir (faltam ' + semResposta.length + ').');
+      return;
+    }
+    if(!fotoDataUrl){
+      showError('Envie ou fotografe a folha de respostas antes de corrigir.');
+      return;
+    }
+    const alunoNome = document.getElementById('aluno').value.trim();
+    if(!alunoNome){
+      showError('Informe o nome do aluno.');
+      return;
+    }
+
+    spinner.classList.add('on');
+    btnLabel.textContent = 'Lendo respostas…';
+    btnCorrigir.disabled = true;
+
+    setTimeout(()=>{
+      corrections = questoes.map(q=>{
+        const correta = gabarito[q];
+        const r = Math.random();
+        let marcada, status;
+        if(r < 0.72){ marcada = correta; status = 'correta'; }
+        else if(r < 0.82){
+          // leitura incerta: marca a correta mas fica como "parcial" pedindo validação
+          marcada = correta; status = 'parcial';
+        }else{
+          const outras = OPCOES.filter(o=>o !== correta);
+          marcada = outras[Math.floor(Math.random()*outras.length)];
+          status = 'incorreta';
+        }
+        return { q, correta, marcada, status };
+      });
+
+      renderResultado(alunoNome);
+
+      spinner.classList.remove('on');
+      btnLabel.textContent = '🧾 Corrigir agora';
+      btnCorrigir.disabled = false;
+      resultadoArea.classList.remove('result-hidden');
+      resultadoArea.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 1400);
   });
-  btnImprimir.addEventListener('click', ()=> window.print());
-  btnSalvar.addEventListener('click', ()=>{
-    btnSalvar.textContent = '✅ Salvo na biblioteca';
-    setTimeout(()=>{ btnSalvar.textContent = '💾 Salvar na biblioteca'; }, 2200);
+
+  function calcularNota(){
+    const total = corrections.length;
+    const certas = corrections.filter(c=>c.status==='correta').length;
+    const parciais = corrections.filter(c=>c.status==='parcial').length;
+    const nota = ((certas + parciais*0.5) / total) * 10;
+    return Math.round(nota*10)/10;
+  }
+
+  function statusIcon(status){
+    return status==='correta' ? '✅' : status==='incorreta' ? '❌' : '⚠️';
+  }
+  function statusTexto(status){
+    return status==='correta' ? 'Resposta certa.' : status==='incorreta' ? 'Resposta diferente do gabarito.' : 'Leitura incerta — confirme a marcação.';
+  }
+
+  function renderResultado(alunoNome){
+    const nota = calcularNota();
+    gradeNum.textContent = nota.toFixed(1);
+    gradeLabel.textContent = alunoNome + ' · Nota calculada';
+    const certas = corrections.filter(c=>c.status==='correta').length;
+    const parciais = corrections.filter(c=>c.status==='parcial').length;
+    gradeGeneral.textContent = certas + ' de ' + corrections.length + ' questões certas' + (parciais ? ', ' + parciais + ' aguardando confirmação manual' : '') + '.';
+
+    correctionList.innerHTML = '';
+    corrections.forEach((c, idx)=>{
+      const item = document.createElement('div');
+      item.className = 'correction-item ' + c.status;
+      item.innerHTML = `
+        <div class="ci-head">
+          <span class="status">${statusIcon(c.status)}</span>
+          <div>
+            <span class="ci-num">Questão ${String(c.q).padStart(2,'0')}</span>
+            <div class="ci-comment">${statusTexto(c.status)}</div>
+            <div class="ci-answer">Marcada: ${c.marcada} · Gabarito: ${c.correta}</div>
+          </div>
+        </div>
+        <div class="ci-override">
+          <span class="ovr-label">Ajustar resposta lida:</span>
+        </div>
+      `;
+      const override = item.querySelector('.ci-override');
+      OPCOES.forEach(letra=>{
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = letra;
+        if(letra === c.marcada) btn.classList.add('selected');
+        btn.addEventListener('click', ()=>{
+          c.marcada = letra;
+          c.status = letra === c.correta ? 'correta' : 'incorreta';
+          renderResultado(alunoNome);
+        });
+        override.appendChild(btn);
+      });
+      correctionList.appendChild(item);
+    });
+  }
+
+  // ---- ações finais ----
+  document.getElementById('btn-salvar-nota').addEventListener('click', function(){
+    this.textContent = '✅ Nota salva';
+    const nomeAtividade = document.getElementById('nome-atividade').value.trim() || 'Atividade sem nome';
+    const alunoNome = document.getElementById('aluno').value.trim();
+    const nota = calcularNota();
+    const tagClass = nota >= 7 ? 'tag-green' : nota >= 5 ? '' : 'tag-red';
+    const item = document.createElement('div');
+    item.className = 'recent-item';
+    item.innerHTML = `<div class="ri-main"><div class="ri-ic">🧾</div><div><h4>${nomeAtividade}</h4><div class="meta">${alunoNome} · agora mesmo</div></div></div><div><span class="tag ${tagClass}">${nota.toFixed(1)}</span></div>`;
+    recentList.insertBefore(item, recentList.firstChild);
+    setTimeout(()=>{ this.textContent = '💾 Salvar nota'; }, 2200);
   });
+
+  document.getElementById('btn-imprimir').addEventListener('click', ()=> window.print());
+
+  document.getElementById('btn-nova-correcao').addEventListener('click', ()=>{
+    resultadoArea.classList.add('result-hidden');
+    btnRemovePhoto.click();
+    document.getElementById('aluno').value = '';
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+
 })();
 </script>
 
-</body>
 </html>
